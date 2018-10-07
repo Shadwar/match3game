@@ -2,8 +2,8 @@ import * as PIXI from 'pixi.js';
 import { loadResources } from './assets';
 import { Gem } from './gems';
 import { random, printTable } from './utils';
+import { gemSize } from './constants';
 
-const gemSize = 60;
 
 export class Game {
   board = null;
@@ -28,10 +28,7 @@ export class Game {
 
   init = () => {
     for (let i = 0; i < 20; i++) {
-      const gem = new Gem('red');
-      const { sprite } = gem;
-      sprite.scale.set(0.1, 0.1);
-      sprite.anchor.set(0.5);
+      const gem = new Gem('red', this.board, this.stage);
 
       let x = 0;
       let y = 0;
@@ -41,15 +38,13 @@ export class Game {
         if (!this.board[y][x]) break;
       }
 
-      sprite.x = 100 + x * gemSize;
-      sprite.y = 100 + y * gemSize;
-
-      this.board[y][x] = gem;
-      this.stage.addChild(sprite);
+      gem.setPosition(x, y);
     }
 
     this.app.ticker.add(this.run);
   };
+
+  onClick = (e) => console.log(e);
 
   checkMoveGems = (delta) => {
     for (let y = 0; y < this.board.length - 1; y++) {
@@ -60,6 +55,8 @@ export class Game {
         const lowerGem = this.board[y+1][x];
         if (lowerGem) {
           if (gem.isFalling && gem.sprite.y >= 100 + y * gemSize) {
+            gem.x = x;
+            gem.y = y;
             gem.isFalling = false;
           }
           continue;
