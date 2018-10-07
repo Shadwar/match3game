@@ -1,7 +1,7 @@
 import *  as PIXI from 'pixi.js';
 
 export class Gem {
-  isFalling = false;
+  fallTo = null;
 
   constructor(type) {
     this.type = type;
