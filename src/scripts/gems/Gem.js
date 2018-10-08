@@ -2,7 +2,7 @@ import *  as PIXI from 'pixi.js';
 import { gemSize } from '../constants';
 
 export class Gem {
-  fallTo = null;
+  fallTo;
   x;
   y;
 
@@ -22,23 +22,28 @@ export class Gem {
     sprite.anchor.set(0.5);
     sprite.interactive = true;
     sprite.buttonMode = true;
-    sprite.on('pointerdown', this.onClick);
 
     this.stage.addChild(sprite);
     this.sprite = sprite;
   };
 
   setPosition = (x, y) => {
+    if (this.x) this.board[this.y][this.x] = null;
     this.x = x;
     this.y = y;
 
-    this.sprite.x = 100 + x * gemSize;
-    this.sprite.y = 100 + y * gemSize;
+    const deltaX = y % 2 ? 0 : 40;
+
+    this.sprite.x = 100 + deltaX + x * (gemSize + gemSize / 3);
+    this.sprite.y = 100 + y * (gemSize / 2.5);
     this.board[y][x] = this;
   };
 
-  onClick = () => {
-    this.board[this.y][this.x] = null;
-    this.stage.removeChild(this.sprite);
+  moveTo = (x, y, delta) => {
+    this.sprite.y += 5 * delta;
+
+    if (this.sprite.y >= 100 + y * (gemSize / 2.5)) {
+      this.setPosition(x, y);
+    }
   };
 }
