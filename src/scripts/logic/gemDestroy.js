@@ -1,35 +1,44 @@
 
-export const gemDestroy = (board) => {
-  for (let y = 0; y < board.length - 1; y++) {
-    let inRow = 0;
-    let lastType = null;
+const getGemFn = (board, type) => (x, y) => {
+  if (y < 0 || y >= board.length) return null;
+  if (x < 0 || x >= board[y].length) return null;
 
+  const gem = board[y][x];
+  if (!gem || gem.type !== type || gem.isFalling) return null;
+  return gem;
+};
+
+export const gemDestroy = (board) => {
+  let gemsToDestroy = [];
+
+  for (let y = board.length - 1; y > 0; y--) {
     for (let x = 0; x < board[y].length; x++) {
       const gem = board[y][x];
+      if (!gem || gem.isFalling) continue;
+      const getGem = getGemFn(board, gem.type);
 
-      if (!gem || gem.isFalling) {
-        inRow = 0;
-        lastType = null;
-        continue;
+      let topGem = getGem(x, y - 2);
+      if (!topGem) continue;
+
+      let leftGem = null;
+      let rightGem = null;
+
+      if (y % 2) {
+        leftGem = getGem(x - 1, y - 1);
+        rightGem = getGem(x, y - 1);
+      } else {
+        leftGem = getGem(x, y - 1);
+        rightGem = getGem(x + 1, y - 1);
       }
 
-      if (!lastType || lastType !== gem.type) {
-        if (inRow >= 3) {
-          while (inRow > 0) {
-            const deletedGem = board[y][x-inRow];
-            console.log(deletedGem);
-            inRow -= 1;
-            deletedGem.sprite.emit('pointerdown');
-          }
-        }
+      if (!leftGem && !rightGem) continue;
 
-        inRow = 1;
-        lastType = gem.type;
-        continue;
-      }
-
-      inRow += 1;
-
+      const gems = [gem, topGem, leftGem, rightGem].filter(gem => gem);
+      gems.forEach(gem => gemsToDestroy.indexOf(gem) === -1 && gemsToDestroy.push(gem));
     }
+  }
+
+  if (gemsToDestroy.length >= 3) {
+    gemsToDestroy.forEach(gem => gem.destroy());
   }
 };

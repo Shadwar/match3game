@@ -1,9 +1,7 @@
-import * as PIXI from 'pixi.js';
 import { loadResources } from './assets';
 import { Gem } from './gems';
-import { random, printTable } from './utils';
-import { gemSize } from './constants';
 import * as Logic from './logic';
+import gems from '../assets/json/gems.json';
 
 
 export class Game {
@@ -19,7 +17,7 @@ export class Game {
   }
 
   init = () => {
-    const colors = ['red', 'green', 'blue'];
+    const colors = gems.map(gem => gem.type);
 
     const board = new Array(12);
     this.board = board;
@@ -53,6 +51,6 @@ export class Game {
 
   run = (delta) => {
     Logic.gemFall(this.board, delta);
-  //   // Logic.gemDestroy(this.board);
+    Logic.gemDestroy(this.board);
   };
 }

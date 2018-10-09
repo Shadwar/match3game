@@ -2,9 +2,10 @@ import *  as PIXI from 'pixi.js';
 import { gemSize } from '../constants';
 
 export class Gem {
-  fallTo;
-  x;
-  y;
+  isFalling;
+  isDestroying;
+  x = -1;
+  y = -1;
 
   constructor(type, board, stage) {
     this.type = type;
@@ -28,7 +29,7 @@ export class Gem {
   };
 
   setPosition = (x, y) => {
-    if (this.x) this.board[this.y][this.x] = null;
+    if (this.x >= 0) this.board[this.y][this.x] = null;
     this.x = x;
     this.y = y;
 
@@ -40,10 +41,18 @@ export class Gem {
   };
 
   moveTo = (x, y, delta) => {
+    this.isFalling = true;
     this.sprite.y += 5 * delta;
 
     if (this.sprite.y >= 100 + y * (gemSize / 2.5)) {
+      this.isFalling = false;
       this.setPosition(x, y);
     }
   };
+
+  destroy = () => {
+    // this.sprite.alpha = 0.5;
+    this.board[this.y][this.x] = null;
+    this.stage.removeChild(this.sprite);
+  }
 }
