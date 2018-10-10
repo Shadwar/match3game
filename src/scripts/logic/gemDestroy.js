@@ -1,44 +1,68 @@
 
-const getGemFn = (board, type) => (x, y) => {
+const getGemFn = (board) => (x, y) => {
   if (y < 0 || y >= board.length) return null;
   if (x < 0 || x >= board[y].length) return null;
 
   const gem = board[y][x];
-  if (!gem || gem.type !== type || gem.isFalling) return null;
+  if (!gem || gem.isFalling || gem === 'floor') return null;
   return gem;
 };
+
+const neighborsOdd = [
+  [0, -2], [0, -1], [0, 1], [0, 2], [-1, 1], [-1, -1]
+];
+
+const neighborsEven = [
+  [0, -2], [1, -1], [1, 1], [0, 2], [0, 1], [0, 2]
+];
+
+const getNeighborsFn = (board) => (x, y) => {
+  const getGem = getGemFn(board);
+
+  const center = getGem(x, y);
+  if (!center) return null;
+
+  const neighborsPattern = y % 2 ? neighborsOdd : neighborsEven;
+
+  return neighborsPattern.map(pattern => getGem(x + pattern[0], y + pattern[1]));
+};
+
 
 export const gemDestroy = (board) => {
   let gemsToDestroy = [];
 
-  for (let y = board.length - 1; y > 0; y--) {
+  const getGem = getGemFn(board);
+  const getNeighbors = getNeighborsFn(board);
+
+  for (let y = 1; y < board.length - 1; y++) {
     for (let x = 0; x < board[y].length; x++) {
-      const gem = board[y][x];
+      const gem = getGem(x, y);
       if (!gem || gem.isFalling) continue;
-      const getGem = getGemFn(board, gem.type);
 
-      let topGem = getGem(x, y - 2);
-      if (!topGem) continue;
+      const neighbors = getNeighbors(x, y);
 
-      let leftGem = null;
-      let rightGem = null;
+      let remove = false;
+      let lastNeighbor = null;
 
-      if (y % 2) {
-        leftGem = getGem(x - 1, y - 1);
-        rightGem = getGem(x, y - 1);
-      } else {
-        leftGem = getGem(x, y - 1);
-        rightGem = getGem(x + 1, y - 1);
-      }
+      neighbors.forEach(neighbor => {
+        if (neighbor && neighbor.type === gem.type) {
+          if (lastNeighbor) {
+            remove = true;
+            gemsToDestroy.push(lastNeighbor);
+            gemsToDestroy.push(neighbor);
+          }
 
-      if (!leftGem && !rightGem) continue;
+          lastNeighbor = neighbor;
+        } else {
+          lastNeighbor = null;
+        }
+      });
 
-      const gems = [gem, topGem, leftGem, rightGem].filter(gem => gem);
-      gems.forEach(gem => gemsToDestroy.indexOf(gem) === -1 && gemsToDestroy.push(gem));
+      if (remove) gemsToDestroy.push(gem);
     }
   }
 
-  if (gemsToDestroy.length >= 3) {
-    gemsToDestroy.forEach(gem => gem.destroy());
-  }
+  const filteredGems = [];
+  gemsToDestroy.forEach(gem => filteredGems.indexOf(gem) === -1 && filteredGems.push(gem));
+  filteredGems.forEach(gem => gem.destroy());
 };

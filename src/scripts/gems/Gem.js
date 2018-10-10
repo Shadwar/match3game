@@ -1,6 +1,16 @@
 import *  as PIXI from 'pixi.js';
 import { gemSize } from '../constants';
 
+
+const coords = [
+  new PIXI.Point(130, 40),
+  new PIXI.Point(380, 40),
+  new PIXI.Point(510, 260),
+  new PIXI.Point(380, 470),
+  new PIXI.Point(130, 470),
+  new PIXI.Point(0, 250)
+];
+
 export class Gem {
   isFalling;
   isDestroying;
@@ -23,6 +33,9 @@ export class Gem {
     sprite.anchor.set(0.5);
     sprite.interactive = true;
     sprite.buttonMode = true;
+    sprite.hitArea = new PIXI.Polygon(coords);
+
+    console.log(sprite.width, sprite.height);
 
     this.stage.addChild(sprite);
     this.sprite = sprite;

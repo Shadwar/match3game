@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import { loadResources } from './assets';
 import { Gem } from './gems';
 import * as Logic from './logic';
@@ -17,6 +18,9 @@ export class Game {
   }
 
   init = () => {
+    const graphics = new PIXI.Graphics();
+    this.stage.addChild(graphics);
+
     const colors = gems.map(gem => gem.type);
 
     const board = new Array(12);
@@ -45,8 +49,29 @@ export class Game {
   };
 
   onClick = (gem) => () => {
-    this.board[gem.y][gem.x] = null;
-    this.stage.removeChild(gem.sprite);
+    console.log(gem);
+  };
+
+  onOver = (event) => {
+    const point = event.data.global;
+
+    const gems = [];
+
+    for (let y = 0; y < this.board.length - 1; y++) {
+      for (let x = 0; x < this.board[y].length; x++) {
+        const gem = this.board[y][x];
+        if (!gem || gem.isFalling) continue;
+
+        const { x: gemX, y: gemY, width, height } = gem.sprite;
+
+        if (point.x < gemX || point.x > (gemX + width)) continue;
+        if (point.y < gemY || point.y > (gemY + height)) continue;
+
+        gems.push(gem);
+      }
+    }
+
+    gems.forEach(gem => gem.destroy());
   };
 
   run = (delta) => {
