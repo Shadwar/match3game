@@ -36,7 +36,6 @@ export class Game {
         console.log(x, y);
 
         gem.setPosition(x, y);
-        gem.sprite.on('pointerdown', this.onClick(gem));
       }
     }
 
@@ -46,10 +45,6 @@ export class Game {
     }
 
     this.app.ticker.add(this.run);
-  };
-
-  onClick = (gem) => () => {
-    console.log(gem);
   };
 
   onOver = (event) => {
@@ -64,14 +59,17 @@ export class Game {
 
         const { x: gemX, y: gemY, width, height } = gem.sprite;
 
+        gem.sprite.alpha = 1.0;
         if (point.x < gemX || point.x > (gemX + width)) continue;
         if (point.y < gemY || point.y > (gemY + height)) continue;
 
-        gems.push(gem);
+        gem.sprite.alpha = 0.5;
+
+        // gems.push(gem);
       }
     }
-
-    gems.forEach(gem => gem.destroy());
+    //
+    // gems.forEach(gem => gem.destroy());
   };
 
   run = (delta) => {
