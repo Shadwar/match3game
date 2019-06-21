@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 import { loadResources } from './assets';
 import { Gem } from './gems';
 import * as Logic from './logic';
-import gems from '../assets/json/gems.json';
+import gems from './assets/gems';
 
 
 export class Game {

@@ -1,4 +1,4 @@
-[
+export default [
   {
     "type": "red",
     "texture": "images/red.png"
@@ -27,4 +27,4 @@
     "type": "indigo",
     "texture": "images/indigo.png"
   }
-]
+];

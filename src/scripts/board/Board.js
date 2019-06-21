@@ -1,4 +1,4 @@
-import gems from '../../assets/json/gems.json';
+import { gems } from '../assets/gems';
 import { Gem } from '../gems';
 
 export class Board {
